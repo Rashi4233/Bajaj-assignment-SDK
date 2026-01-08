@@ -2,7 +2,9 @@ package com.bajaj.trading.service;
 
 import com.bajaj.trading.dto.OrderRequest;
 import com.bajaj.trading.model.Order;
+import com.bajaj.trading.model.Trade;
 import com.bajaj.trading.repository.OrderRepository;
+import com.bajaj.trading.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +33,18 @@ public class OrderService {
         // Simulate execution
         if ("MARKET".equalsIgnoreCase(order.getType())) {
             order.setStatus("EXECUTED");
+
+            // Create trade for executed order
+            double executionPrice = order.getPrice() != null ? order.getPrice() : 3500.0;
+
+            Trade trade = new Trade(
+                    order.getOrderId(),
+                    order.getSymbol(),
+                    order.getQuantity(),
+                    executionPrice
+            );
+
+            TradeRepository.save(trade);
         }
 
         // Save order
